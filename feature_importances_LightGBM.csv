@@ -1,0 +1,17 @@
+feature,importance,importance_fraction
+num_pipe__Student_Age,112.625,0.20832369942196532
+num_pipe__Weekly_Study_Hours,58.5,0.10820809248554913
+ord_pipe__Project_work,42.75,0.07907514450867052
+num_pipe__Attendance,40.875,0.07560693641618497
+ord_pipe__Reading,40.5,0.07491329479768787
+ord_pipe__Notes,39.875,0.07375722543352602
+ord_pipe__Listening_in_Class,35.875,0.06635838150289017
+ord_pipe__Additional_Work,30.0,0.055491329479768786
+num_pipe__Scholarship,25.0,0.046242774566473986
+ord_pipe__Sports_activity,24.125,0.0446242774566474
+ohe_pipe__Transportation_Bus,22.875,0.0423121387283237
+ohe_pipe__High_School_Type_State,22.75,0.04208092485549133
+ohe_pipe__Sex_Female,18.125,0.03352601156069364
+ohe_pipe__High_School_Type_Private,12.125,0.022427745664739884
+ohe_pipe__Sex_Male,7.75,0.014335260115606936
+ohe_pipe__Transportation_Private,6.875,0.012716763005780347

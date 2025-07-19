@@ -1,0 +1,14 @@
+pandas
+matplotlib
+seaborn
+scikit-learn
+optuna
+xgboost
+lightgbm
+catboost
+mlflow
+tqdm
+ipywidgets
+jupyter
+boto3
+python-dotenv
