@@ -1,19 +1,16 @@
 version: '3.8'
 
 services:
-  # Сервис API (Бэкенд)
   api-server:
-    image: ${CI_REGISTRY_IMAGE}/api:latest  # Образ будет браться из GitLab Registry
+    image: ${CI_REGISTRY_IMAGE}/api:latest
     container_name: api-server
     restart: always
     ports:
       - "8000:8000"
     networks:
       - my-project-network
-
-  # Сервис Gradio (UI)
   gradio-ui:
-    image: ${CI_REGISTRY_IMAGE}/gradio:latest # Образ будет браться из GitLab Registry
+    image: ${CI_REGISTRY_IMAGE}/gradio:latest
     container_name: gradio-ui
     restart: always
     ports:
@@ -21,13 +18,12 @@ services:
     networks:
       - my-project-network
     environment:
-      - API_URL=http://api-server:8000/predict-single # Обращение к API по имени сервиса
+      - API_URL=http://api-server:8000/predict-single
     depends_on:
       - api-server
 
-  # Сервис Streamlit (UI)
   streamlit-ui:
-    image: ${CI_REGISTRY_IMAGE}/streamlit:latest # Образ будет браться из GitLab Registry
+    image: ${CI_REGISTRY_IMAGE}/streamlit:latest
     container_name: streamlit-ui
     restart: always
     ports:
@@ -35,7 +31,7 @@ services:
     networks:
       - my-project-network
     environment:
-      - API_URL=http://api-server:8000/predict-single # Обращение к API по имени сервиса
+      - API_URL=http://api-server:8000/predict-single
     depends_on:
       - api-server
 

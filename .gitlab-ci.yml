@@ -1,44 +1,64 @@
-version: '3.8'
+stages:
+  - build
+  - deploy
+
+image: docker:20.10.16
+
+variables:
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  DOCKER_DRIVER: overlay2
+
+  API_VERSION: 0.8
+  CI_API_PATH: "api"
+
+  UI_VERSION: 0.5
+
+  CI_GR_UI_PATH: "gradio_ui"
+  PROJECT_NAME: "gradio"
+  
 
 services:
-  # Сервис API (Бэкенд)
-  api-server:
-    image: ${CI_REGISTRY_IMAGE}/api:latest  # Образ будет браться из GitLab Registry
-    container_name: api-server
-    restart: always
-    ports:
-      - "8000:8000"
-    networks:
-      - my-project-network
+  - docker:20.10.16-dind
 
-  # Сервис Gradio (UI)
-  gradio-ui:
-    image: ${CI_REGISTRY_IMAGE}/gradio:latest # Образ будет браться из GitLab Registry
-    container_name: gradio-ui
-    restart: always
-    ports:
-      - "2000:2000"
-    networks:
-      - my-project-network
-    environment:
-      - API_URL=http://api-server:8000/predict-single # Обращение к API по имени сервиса
-    depends_on:
-      - api-server
+before_script:
+  - for try in {1..10}; do sleep 0.5; docker info && break ; done 
 
-  # Сервис Streamlit (UI)
-  streamlit-ui:
-    image: ${CI_REGISTRY_IMAGE}/streamlit:latest # Образ будет браться из GitLab Registry
-    container_name: streamlit-ui
-    restart: always
-    ports:
-      - "8501:8501"
-    networks:
-      - my-project-network
-    environment:
-      - API_URL=http://api-server:8000/predict-single # Обращение к API по имени сервиса
-    depends_on:
-      - api-server
+build:
+  stage: build
+  script:
+    - printf "%b\n" "$ENV_FILE" > ./api/.env
+    - printf "%b\n" "$ENV_FILE" > ./gradio_ui/.env
+    - cp "$ENV_FILE" ./api/.env 
+    - cp "$ENV_FILE" ./gradio_ui/.env
+      docker build ./api
+      --tag "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}"
+    - docker push "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}" 
 
-networks:
-  my-project-network:
-    driver: bridge
+      docker build ./ui/gradio
+      --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
+    - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
+      docker build ./ui/streamlit
+      --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+
+# deploy:
+#   image: bitnami/kubectl:latest
+#   stage: deploy
+#   script:
+#     - kubectl config use-context ${CI_PROJECT_PATH}:mercube #  account/project:<GitLab_agent_name> Replace <GitLab_agent_name> with the name of the agent in Managed Service for GitLab. 
+#     # When variables contain special characters like ', / &' ,  using '|' or '@' as a delimiter prevents sed from misinterpreting the values
+#     - >-
+#       cat k8s.yaml 
+#       | sed -e "s,UI__VERSION,${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}," 
+#       | sed -e "s,API__VERSION,${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}," 
+#       | sed -e "s,PROJECT_NAME,${PROJECT_NAME},"
+#       | sed -e "s|ALB_INGRESS_EXT_IP|${ALB_INGRESS_EXT_IP}|"
+#       | sed -e "s|ALB_INGRESS_SUBNET|${ALB_INGRESS_SUBNET}|"
+#       | sed -e "s|ALB_INGRESS_SEC_GROUP|${ALB_INGRESS_SEC_GROUP}|"
+#       | sed -e "s|DOMAIN_NAME|${DOMAIN_NAME}|"
+#       | sed -e "s|TLS_ID|${TLS_ID}|"
+#       | kubectl apply -f - # reads the k8s.yaml file
+#     # and replaces the VERSION placeholder with the Docker image tag from the build stage, applies the Kubernetes configuration to deploy the app
