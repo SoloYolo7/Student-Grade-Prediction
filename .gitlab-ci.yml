@@ -33,16 +33,16 @@ build:
     - printf "%b\n" "$ENV_FILE" > ./gradio_ui/.env
     - cp "$ENV_FILE" ./api/.env 
     - cp "$ENV_FILE" ./gradio_ui/.env
-      docker build ./api
+    - docker build ./api 
       --tag "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}" 
 
-      docker build ./ui/gradio
+    - docker build ./ui/gradio
       --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
-      docker build ./ui/streamlit
-      --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
-    - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    # - docker build ./ui/streamlit
+    #   --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    # - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
 
 # deploy:
 #   image: bitnami/kubectl:latest
