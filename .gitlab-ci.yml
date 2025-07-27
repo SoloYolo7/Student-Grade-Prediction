@@ -39,11 +39,11 @@ build:
       --tag "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}" 
 
-    - docker build ./ui/gradio
+    - docker build ./gradio_ui
       --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
 
-    - docker build ./ui/streamlit
+    - docker build ./streamlit
       --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
     
