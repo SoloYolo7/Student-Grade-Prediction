@@ -29,6 +29,8 @@ before_script:
 build:
   stage: build
   script:
+    - echo "${CI_REGISTRY_KEY}" | docker login ${CI_REGISTRY} -u json_key --password-stdin
+
     - printf "%b\n" "$ENV_FILE" > ./api/.env
     - printf "%b\n" "$ENV_FILE" > ./gradio_ui/.env
     - cp "$ENV_FILE" ./api/.env 
@@ -44,6 +46,7 @@ build:
     - docker build ./ui/streamlit
       --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    
 
 deploy:
   image: bitnami/kubectl:latest
