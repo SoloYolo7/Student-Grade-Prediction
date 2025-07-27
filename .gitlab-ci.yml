@@ -17,7 +17,7 @@ variables:
   UI_VERSION: 0.5
 
   CI_GR_UI_PATH: "gradio_ui"
-  PROJECT_NAME: "student_grade_prediction"
+  PROJECT_NAME: "student-grade-prediction"
   
 
 services:
