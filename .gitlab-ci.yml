@@ -1,5 +1,5 @@
 stages:
-  - build
+  # - build
   - deploy
 
 image: docker:20.10.16
@@ -17,7 +17,7 @@ variables:
   UI_VERSION: 0.5
 
   CI_GR_UI_PATH: "gradio_ui"
-  PROJECT_NAME: "gradio"
+  PROJECT_NAME: "student_grade_prediction"
   
 
 services:
@@ -26,39 +26,35 @@ services:
 before_script:
   - for try in {1..10}; do sleep 0.5; docker info && break ; done 
 
-build:
-  stage: build
-  script:
-    - printf "%b\n" "$ENV_FILE" > ./api/.env
-    - printf "%b\n" "$ENV_FILE" > ./gradio_ui/.env
-    - cp "$ENV_FILE" ./api/.env 
-    - cp "$ENV_FILE" ./gradio_ui/.env
-    - docker build ./api 
-      --tag "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}"
-    - docker push "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}" 
+# build:
+#   stage: build
+#   script:
+#     - printf "%b\n" "$ENV_FILE" > ./api/.env
+#     - printf "%b\n" "$ENV_FILE" > ./gradio_ui/.env
+#     - cp "$ENV_FILE" ./api/.env 
+#     - cp "$ENV_FILE" ./gradio_ui/.env
+#     - docker build ./api 
+#       --tag "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}"
+#     - docker push "${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}" 
 
-    - docker build ./ui/gradio
-      --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
-    - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
+#     - docker build ./ui/gradio
+#       --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
+#     - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
+
     # - docker build ./ui/streamlit
     #   --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
     # - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
 
-# deploy:
-#   image: bitnami/kubectl:latest
-#   stage: deploy
-#   script:
-#     - kubectl config use-context ${CI_PROJECT_PATH}:mercube #  account/project:<GitLab_agent_name> Replace <GitLab_agent_name> with the name of the agent in Managed Service for GitLab. 
-#     # When variables contain special characters like ', / &' ,  using '|' or '@' as a delimiter prevents sed from misinterpreting the values
-#     - >-
-#       cat k8s.yaml 
-#       | sed -e "s,UI__VERSION,${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}," 
-#       | sed -e "s,API__VERSION,${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}," 
-#       | sed -e "s,PROJECT_NAME,${PROJECT_NAME},"
-#       | sed -e "s|ALB_INGRESS_EXT_IP|${ALB_INGRESS_EXT_IP}|"
-#       | sed -e "s|ALB_INGRESS_SUBNET|${ALB_INGRESS_SUBNET}|"
-#       | sed -e "s|ALB_INGRESS_SEC_GROUP|${ALB_INGRESS_SEC_GROUP}|"
-#       | sed -e "s|DOMAIN_NAME|${DOMAIN_NAME}|"
-#       | sed -e "s|TLS_ID|${TLS_ID}|"
-#       | kubectl apply -f - # reads the k8s.yaml file
-#     # and replaces the VERSION placeholder with the Docker image tag from the build stage, applies the Kubernetes configuration to deploy the app
+deploy:
+  image: bitnami/kubectl:latest
+  stage: deploy
+  script:
+    - kubectl config use-context ${CI_PROJECT_PATH}:mercube #  account/project:<GitLab_agent_name> Replace <GitLab_agent_name> with the name of the agent in Managed Service for GitLab. 
+    # When variables contain special characters like ', / &' ,  using '|' or '@' as a delimiter prevents sed from misinterpreting the values
+    - >-
+      cat k8s.yaml 
+      | sed -e "s,__UI__VERSION__,${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}," 
+      | sed -e "s,__API__VERSION__,${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}," 
+      | sed -e "s,__PROJECT_NAME__,${PROJECT_NAME},"
+      | kubectl apply -f - # reads the k8s.yaml file
+    # and replaces the VERSION placeholder with the Docker image tag from the build stage, applies the Kubernetes configuration to deploy the app
