@@ -49,7 +49,7 @@ deploy:
   image: bitnami/kubectl:latest
   stage: deploy
   script:
-    - kubectl config use-context ${CI_PROJECT_PATH}:mercube #  account/project:<GitLab_agent_name> Replace <GitLab_agent_name> with the name of the agent in Managed Service for GitLab. 
+    - kubectl config use-context ${CI_PROJECT_PATH}:student #  account/project:<GitLab_agent_name> Replace <GitLab_agent_name> with the name of the agent in Managed Service for GitLab. 
     # When variables contain special characters like ', / &' ,  using '|' or '@' as a delimiter prevents sed from misinterpreting the values
     - >-
       cat k8s.yaml 
