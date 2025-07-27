@@ -17,6 +17,7 @@ variables:
   UI_VERSION: 0.5
 
   CI_GR_UI_PATH: "gradio_ui"
+  # CI_ST_UI_PATH: "streamlit"
   PROJECT_NAME: "student-grade-prediction"
   
 
@@ -43,9 +44,9 @@ build:
       --tag "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
     - docker push "${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}"
 
-    - docker build ./streamlit
-      --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
-    - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    # - docker build ./streamlit
+    #   --tag "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
+    # - docker push "${CI_REGISTRY}/${CI_ST_UI_PATH}:${UI_VERSION}"
     
 
 deploy:
