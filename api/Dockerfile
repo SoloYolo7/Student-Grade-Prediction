@@ -10,4 +10,4 @@ COPY fastapi_api.py .
 
 COPY .env .
 
-CMD ["uvicorn", "fastapi_api:app", "--host", "0.0.0.0"]
+CMD ["uvicorn", "fastapi_api:app", "--host", "0.0.0.0", "--port", "8000"]

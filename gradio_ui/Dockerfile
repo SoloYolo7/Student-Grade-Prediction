@@ -10,4 +10,6 @@ COPY gradio_app.py .
 
 COPY .env .
 
-CMD ["python", "gradio_app.py"]
+EXPOSE 8002
+
+CMD ["python", "gradio_app.py", "--port", "8002"]

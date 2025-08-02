@@ -1,39 +1,30 @@
-version: '3.8'
-
 services:
   api-server:
-    image: ${CI_REGISTRY_IMAGE}/api:latest
-    container_name: api-server
+    build: api
     restart: always
     ports:
       - "8000:8000"
     networks:
       - my-project-network
   gradio-ui:
-    image: ${CI_REGISTRY_IMAGE}/gradio:latest
-    container_name: gradio-ui
+    build: gradio_ui
     restart: always
     ports:
-      - "2000:2000"
+      - "1234:8002"
     networks:
       - my-project-network
-    environment:
-      - API_URL=http://api-server:8000/predict-single
     depends_on:
       - api-server
 
-  streamlit-ui:
-    image: ${CI_REGISTRY_IMAGE}/streamlit:latest
-    container_name: streamlit-ui
-    restart: always
-    ports:
-      - "8501:8501"
-    networks:
-      - my-project-network
-    environment:
-      - API_URL=http://api-server:8000/predict-single
-    depends_on:
-      - api-server
+  # streamlit-ui:
+  #   build: streamlit
+  #   restart: always
+  #   ports:
+  #     - "8501:8501"
+  #   networks:
+  #     - my-project-network
+  #   depends_on:
+  #     - api-server
 
 networks:
   my-project-network:

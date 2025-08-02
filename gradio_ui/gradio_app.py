@@ -4,7 +4,7 @@ import requests
 import os
 from datetime import datetime
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict-single")
+API_URL = "http://api-student-grade-prediction:8000/predict-single"
 
 def get_predictions(uploaded_file):
     """
@@ -76,4 +76,4 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Предсказание оцен�
     )
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=2000)
+    demo.launch(server_name="0.0.0.0", server_port=8002)
