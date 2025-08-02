@@ -79,7 +79,7 @@ spec: # defines the desired state for the deployment
         - name: ui-__PROJECT_NAME__ # the name of the container
           image: __UI__VERSION__ # the Docker image used for this container
           ports:
-            - containerPort: 2000 # specifies that port 80 should be exposed on the container
+            - containerPort: 8002 # specifies that port 80 should be exposed on the container
           # volumeMounts:
           #   - name: ui-__PROJECT_NAME__
           #     mountPath: /etc/nginx
@@ -104,6 +104,6 @@ spec:
   ports:
     - name: http
       port: 80 # port for external access to the service
-      targetPort: 2000
+      targetPort: 8002
       # protocol: TCP
       # nodePort: 30850 # The range of valid ports is 30000-32767
