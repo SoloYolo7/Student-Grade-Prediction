@@ -4,7 +4,7 @@ import requests
 import os
 from datetime import datetime
 
-API_URL = "http://api-student-grade-prediction:8000/predict-single"
+API_URL = "http://api-student-grade-prediction/predict-single"
 
 def get_predictions(uploaded_file):
     """
