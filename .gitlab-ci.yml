@@ -11,11 +11,10 @@ variables:
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   DOCKER_DRIVER: overlay2
 
-  API_VERSION: 0.94
+  API_VERSION: 0.95
   CI_API_PATH: "api"
 
-  UI_VERSION: 0.83
-
+  UI_VERSION: 0.84
   CI_GR_UI_PATH: "gradio_ui"
   # CI_ST_UI_PATH: "streamlit"
   PROJECT_NAME: "student-grade-prediction"

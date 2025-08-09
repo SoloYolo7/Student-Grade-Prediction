@@ -63,8 +63,6 @@ class DictFeatures(BaseModel):
 #     return{"answer":(pd.DataFrame(loaded_model.predict(pd.read_csv("../X_test.csv")))).to_json()}
 
 ml_model= mlflow.pyfunc.load_model(logged_model_uri)
-app = fastapi.FastAPI()
-
 @app.get("/")
 def root():
     return {"message": "API для предсказания оценок студентов. Используйте /docs для документации."}
