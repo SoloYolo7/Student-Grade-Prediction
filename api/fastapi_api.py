@@ -13,7 +13,7 @@ load_dotenv("../.env")
 mlflow.set_tracking_uri("http://84.201.144.227:8000")
 logged_model_uri = 'runs:/12f37fb387ae4e3d865270d6ee2f8ebc/model_pipeline' 
 
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(root_path="/api-student-grade-prediction")
 
 class StudentFeatures(BaseModel):
     Sex: str

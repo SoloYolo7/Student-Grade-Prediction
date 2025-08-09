@@ -45,7 +45,7 @@ metadata:
 spec:
   selector:
     app: api-__PROJECT_NAME__
-  type: LoadBalancer
+  type: NodePort
   ports:
     - name: http
       port: 80 # port for external access to the service
@@ -100,7 +100,7 @@ metadata:
 spec:
   selector:
     app: ui-__PROJECT_NAME__
-  type: LoadBalancer
+  type: NodePort
   ports:
     - name: http
       port: 80 # port for external access to the service

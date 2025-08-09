@@ -76,4 +76,4 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Предсказание оцен�
     )
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=8002)
+    demo.launch(server_name="0.0.0.0", server_port=8002, root_path="/ui-student-grade-prediction")
