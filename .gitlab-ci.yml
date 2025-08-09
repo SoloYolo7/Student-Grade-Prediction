@@ -60,5 +60,9 @@ deploy:
       | sed -e "s,__UI__VERSION__,${CI_REGISTRY}/${CI_GR_UI_PATH}:${UI_VERSION}," 
       | sed -e "s,__API__VERSION__,${CI_REGISTRY}/${CI_API_PATH}:${API_VERSION}," 
       | sed -e "s,__PROJECT_NAME__,${PROJECT_NAME},"
+      | sed -e "s,__ALB_INGRESS_SUBNET__,${ALB_INGRESS_SUBNET},"
+      | sed -e "s,__ALB_INGRESS_SEC_GROUP__,${__ALB_INGRESS_SEC_GROUP__},"
+      | sed -e "s,__ALB_INGRESS_EXT_IP__,${__ALB_INGRESS_EXT_IP__},"
+      | sed -e "s,__TLS_ID__,${__TLS_ID__},"
       | kubectl apply -f - # reads the k8s.yaml file
     # and replaces the VERSION placeholder with the Docker image tag from the build stage, applies the Kubernetes configuration to deploy the app
