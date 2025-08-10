@@ -4,9 +4,7 @@ import requests
 import os
 from datetime import datetime
 
-# 1) Сделаем адреса конфигурируемыми через env (удобно для dev/prod)  ←
-API_URL = os.getenv("API_URL", "http://api-student-grade-prediction/predict-single")
-ROOT_PATH = "/ui-student-grade-prediction"
+API_URL = "http://api-student-grade-prediction/predict-single"
 
 def get_predictions(uploaded_file):
     """
@@ -16,16 +14,8 @@ def get_predictions(uploaded_file):
     if uploaded_file is None:
         raise gr.Error("Пожалуйста, сначала загрузите CSV файл.")
 
-    # 2) Надёжное получение пути к файлу из gr.File (поддержит разные режимы)  ←
-    file_path = getattr(uploaded_file, "name", None)
-    if file_path is None and isinstance(uploaded_file, dict):
-        file_path = uploaded_file.get("name")
-    if file_path is None:
-        file_path = str(uploaded_file)
-
     try:
-        # 3) UTF-8 с BOM тоже прочитается (часто из Excel)  ←
-        df_original = pd.read_csv(file_path, encoding="utf-8-sig")
+        df_original = pd.read_csv(uploaded_file.name)
     except Exception as e:
         raise gr.Error(f"Не удалось прочитать файл. Убедитесь, что это корректный CSV. Ошибка: {e}")
 
@@ -36,8 +26,14 @@ def get_predictions(uploaded_file):
         response = requests.post(API_URL, json=payload, headers={"Content-Type": "application/json"})
         response.raise_for_status()
         predictions = response.json().get('predictions')
+
+    except requests.exceptions.ConnectionError:
+        raise gr.Error(f"Не удалось подключиться к API. Убедитесь, что FastAPI сервер запущен по адресу {API_URL}")
+    except requests.exceptions.HTTPError as e:
+        raise gr.Error(f"API вернуло ошибку: {e.response.status_code} - {e.response.text}")
     except Exception as e:
-       return None, None, None, f"Произошла непредвиденная ошибка при запросе к API: {e}"
+        raise gr.Error(f"Произошла непредвиденная ошибка при запросе к API: {e}")
+
     if predictions is None:
         raise gr.Error("API не вернуло предсказания в ожидаемом формате.")
 
@@ -47,16 +43,14 @@ def get_predictions(uploaded_file):
     output_dir = "outputs"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
+        
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base_filename = os.path.splitext(os.path.basename(file_path))[0]  # ←
+    base_filename = os.path.splitext(os.path.basename(uploaded_file.name))[0]
     csv_path = os.path.join(output_dir, f"{base_filename}_{timestamp}.csv")
     excel_path = os.path.join(output_dir, f"{base_filename}_{timestamp}.xlsx")
-
+    
     df_with_predictions.to_csv(csv_path, index=False)
-
-    # 4) Если в образе нет openpyxl — чтобы не падало, можно убрать engine или оставить как есть  ←
-    df_with_predictions.to_excel(excel_path, index=False)  # engine='openpyxl' можно удалить
+    df_with_predictions.to_excel(excel_path, index=False, engine='openpyxl')
 
     return df_with_predictions, gr.update(visible=True, value=csv_path), gr.update(visible=True, value=excel_path)
 
@@ -68,20 +62,18 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Предсказание оцен�
         with gr.Column(scale=1):
             file_input = gr.File(label="Загрузите ваш CSV файл", file_types=[".csv"])
             btn_predict = gr.Button("Получить предсказание", variant="primary")
-
+            
             btn_download_csv = gr.File(label="Скачать CSV", visible=False)
             btn_download_excel = gr.File(label="Скачать Excel", visible=False)
-            exit_log = gr.Textbox(label="Лог", visible=True)
 
         with gr.Column(scale=2):
             df_output = gr.DataFrame(label="Результаты с предсказаниями")
-
+    
     btn_predict.click(
         fn=get_predictions,
         inputs=file_input,
-        outputs=[df_output, btn_download_csv, btn_download_excel, exit_log]
+        outputs=[df_output, btn_download_csv, btn_download_excel]
     )
 
 if __name__ == "__main__":
-    # 5) Используем переменную окружения или дефолтный префикс  ←
-    demo.launch(server_name="0.0.0.0", server_port=8002, root_path=ROOT_PATH)
+    demo.launch(server_name="0.0.0.0", server_port=8002, root_path="/ui-student-grade-prediction")
