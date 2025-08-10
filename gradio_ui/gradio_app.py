@@ -6,7 +6,7 @@ from datetime import datetime
 
 # 1) Сделаем адреса конфигурируемыми через env (удобно для dev/prod)  ←
 API_URL = os.getenv("API_URL", "http://api-student-grade-prediction/predict-single")
-ROOT_PATH = os.getenv("GRADIO_ROOT_PATH", "/ui-student-grade-prediction")  # ←
+ROOT_PATH = "/ui-student-grade-prediction"
 
 def get_predictions(uploaded_file):
     """

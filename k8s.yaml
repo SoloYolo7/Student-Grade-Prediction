@@ -80,9 +80,6 @@ spec: # defines the desired state for the deployment
           image: __UI__VERSION__ # the Docker image used for this container
           ports:
             - containerPort: 8002 # specifies that port 80 should be exposed on the container
-          env:
-            - name: GRADIO_ROOT_PATH
-              value: "/ui-__PROJECT_NAME__"
           # volumeMounts:
           #   - name: ui-__PROJECT_NAME__
           #     mountPath: /etc/nginx
