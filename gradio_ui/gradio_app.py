@@ -36,13 +36,8 @@ def get_predictions(uploaded_file):
         response = requests.post(API_URL, json=payload, headers={"Content-Type": "application/json"})
         response.raise_for_status()
         predictions = response.json().get('predictions')
-    except requests.exceptions.ConnectionError:
-        raise gr.Error(f"Не удалось подключиться к API. Убедитесь, что FastAPI сервер доступен по адресу {API_URL}")
-    except requests.exceptions.HTTPError as e:
-        raise gr.Error(f"API вернуло ошибку: {e.response.status_code} - {e.response.text}")
     except Exception as e:
-        raise gr.Error(f"Произошла непредвиденная ошибка при запросе к API: {e}")
-
+       return None, None, None, f"Произошла непредвиденная ошибка при запросе к API: {e}"
     if predictions is None:
         raise gr.Error("API не вернуло предсказания в ожидаемом формате.")
 
@@ -76,6 +71,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Предсказание оцен�
 
             btn_download_csv = gr.File(label="Скачать CSV", visible=False)
             btn_download_excel = gr.File(label="Скачать Excel", visible=False)
+            exit_log = gr.Textbox(label="Лог", visible=True)
 
         with gr.Column(scale=2):
             df_output = gr.DataFrame(label="Результаты с предсказаниями")
@@ -83,7 +79,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Предсказание оцен�
     btn_predict.click(
         fn=get_predictions,
         inputs=file_input,
-        outputs=[df_output, btn_download_csv, btn_download_excel]
+        outputs=[df_output, btn_download_csv, btn_download_excel, exit_log]
     )
 
 if __name__ == "__main__":
